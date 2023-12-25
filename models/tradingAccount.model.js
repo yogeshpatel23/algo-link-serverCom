@@ -38,6 +38,7 @@ const tradingAccountSchema = new Schema({
   tokenExp: {
     type: String,
     // transform: (v) => v == new Date().toLocaleDateString("IN"),
+    get: (v) => v === new Date().toDateString(),
   },
   isPrimary: {
     type: Boolean,
@@ -47,6 +48,12 @@ const tradingAccountSchema = new Schema({
     type: Boolean,
     default: false,
   },
+});
+
+tradingAccountSchema.pre("save", function (next) {
+  if (!this.isModified("token")) return next();
+  this.tokenExp = new Date().toDateString();
+  next();
 });
 
 const TradingAccount =

@@ -3,7 +3,7 @@ import Navlinks from "./Navlinks";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { signOut } from "@/auth";
 
-const Sidenav = () => {
+const Sidenav = async () => {
   return (
     <div className="flex flex-col h-full px-3 py-4 md:px-2">
       <Link

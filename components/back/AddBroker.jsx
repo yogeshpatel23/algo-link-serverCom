@@ -1,7 +1,7 @@
+"use client";
 import { CurrencyRupeeIcon } from "@heroicons/react/20/solid";
 import {
   BuildingOfficeIcon,
-  CheckCircleIcon,
   CheckIcon,
   DocumentChartBarIcon,
   FingerPrintIcon,
@@ -13,12 +13,15 @@ import {
 import Link from "next/link";
 import React from "react";
 import Button from "../ui/Button";
+import { addAccount } from "@/lib/actions";
+import { useFormState } from "react-dom";
 
 const brokers = ["finvaisa", "flattrade"];
 
 const AddBroker = () => {
+  const [state, dispatch] = useFormState(addAccount, undefined);
   return (
-    <form>
+    <form action={dispatch}>
       <div className="rounded-md w-full md:w-96 bg-gray-50 p-4 shadow-md md:p-6">
         {/* name input */}
         <div className="mb-4">
@@ -32,8 +35,15 @@ const AddBroker = () => {
               name="name"
               className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               placeholder="Name for broker"
+              required
+              aria-describedby="name-error"
             />
             <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          </div>
+          <div id="name-error" aria-live="polite" aria-atomic="true">
+            {state?.name && (
+              <p className="mt-2 text-sm text-red-500">{state?.name.message}</p>
+            )}
           </div>
         </div>
         {/* Broker Select */}
@@ -45,7 +55,10 @@ const AddBroker = () => {
             <select
               id="broker"
               name="broker"
+              defaultValue=""
               className="peer capitalize block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              required
+              aria-describedby="broker-error"
             >
               <option value="" disabled>
                 Select Broker
@@ -57,6 +70,13 @@ const AddBroker = () => {
               ))}
             </select>
             <BuildingOfficeIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          </div>
+          <div id="broker-error" aria-live="polite" aria-atomic="true">
+            {state?.broker && (
+              <p className="mt-2 text-sm text-red-500">
+                {state.broker.message}
+              </p>
+            )}
           </div>
         </div>
         {/* userid input */}
@@ -71,8 +91,17 @@ const AddBroker = () => {
               name="userid"
               className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               placeholder="User Id of Trading A/c"
+              required
+              aria-describedby="userid-error"
             />
             <FingerPrintIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          </div>
+          <div id="userid-error" aria-live="polite" aria-atomic="true">
+            {state?.userid && (
+              <p className="mt-2 text-sm text-red-500">
+                {state.userid.message}
+              </p>
+            )}
           </div>
         </div>
         {/* key input */}
@@ -87,8 +116,15 @@ const AddBroker = () => {
               name="key"
               className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               placeholder="Api Key provided by Broker"
+              required
+              aria-describedby="key-error"
             />
             <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          </div>
+          <div id="key-error" aria-live="polite" aria-atomic="true">
+            {state?.key && (
+              <p className="mt-2 text-sm text-red-500">{state.key.message}</p>
+            )}
           </div>
         </div>
         {/* secret input */}
@@ -103,8 +139,17 @@ const AddBroker = () => {
               name="secret"
               className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               placeholder="Api secret provided by Broker"
+              required
+              aria-describedby="secret-error"
             />
             <ShieldCheckIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          </div>
+          <div id="secret-error" aria-live="polite" aria-atomic="true">
+            {state?.secret && (
+              <p className="mt-2 text-sm text-red-500">
+                {state.secret.message}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
@@ -118,6 +163,8 @@ const AddBroker = () => {
                 type="number"
                 id="lot"
                 name="lot"
+                defaultValue={1}
+                min={1}
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 placeholder="Lot size "
               />
@@ -134,6 +181,8 @@ const AddBroker = () => {
                 type="number"
                 id="risk"
                 name="risk"
+                defaultValue={10}
+                min={10}
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 placeholder="max risk"
               />
@@ -169,7 +218,7 @@ const AddBroker = () => {
                   name="isActive"
                   id="inactive"
                   defaultChecked
-                  value={true}
+                  value={false}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -191,6 +240,11 @@ const AddBroker = () => {
           </Link>
           <Button type="submit">Add Account</Button>
         </div>
+        {state?.error && (
+          <div className="mt-4 p-2 bg-red-300 text-sm font-medium">
+            {state.error.message}
+          </div>
+        )}
       </div>
     </form>
   );
